@@ -5,20 +5,26 @@ import {
   ButtonLabel,
   Input,
 } from './Searchbar.styled';
+import { HiOutlineMagnifyingGlass } from 'react-icons/hi2';
 
 export const Searchbar = ({ onSubmit }) => {
   return (
     <SearchbarWrapper>
-      <SearchForm>
+      <SearchForm
+        onSubmit={evt => {
+          evt.preventDefault();
+          onSubmit(evt.target.value);
+          evt.target.reset();
+        }}
+      >
         <Button type="submit">
-          <ButtonLabel class="button-label">Search</ButtonLabel>
+          <HiOutlineMagnifyingGlass />
         </Button>
 
         <Input
-          class="input"
           type="text"
-          autocomplete="off"
-          autofocus
+          autoComplete="off"
+          autoFocus
           placeholder="Search images and photos"
         />
       </SearchForm>
