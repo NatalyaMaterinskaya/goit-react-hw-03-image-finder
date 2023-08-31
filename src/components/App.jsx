@@ -3,14 +3,32 @@ import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from 'components/Button/Button';
 import { GlobalStyle } from './GlobalStyle';
+import { fetchImages } from 'api';
 
-export class App extends Component  {
-
+export class App extends Component {
   state = {
     query: '',
     images: [],
+    loading: false,
     page: 1,
   };
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.query !== this.state.query ||
+      prevState.page !== this.state.page
+    ) {
+      try {
+        this.setState({ loading: true })
+        const images = await fetchImages();
+        console.log(images);
+        this. setState({images, loading: false })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+  }
 
   onSubmit = newQuery => {
     this.setState({
@@ -18,7 +36,7 @@ export class App extends Component  {
       images: [],
       page: 1,
     });
-  }
+  };
   render() {
     return (
       <div
@@ -35,5 +53,5 @@ export class App extends Component  {
         <GlobalStyle />
       </div>
     );
-  };
-};
+  }
+}

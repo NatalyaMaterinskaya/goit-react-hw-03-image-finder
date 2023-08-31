@@ -13,7 +13,7 @@ export const Searchbar = ({ onSubmit }) => {
       <SearchForm
         onSubmit={evt => {
           evt.preventDefault();
-          onSubmit(evt.target.value);
+          onSubmit(evt.target.elements.query.value);
           evt.target.reset();
         }}
       >
@@ -23,6 +23,7 @@ export const Searchbar = ({ onSubmit }) => {
 
         <Input
           type="text"
+          name='query'
           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
