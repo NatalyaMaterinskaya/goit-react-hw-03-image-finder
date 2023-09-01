@@ -13,30 +13,40 @@ export class App extends Component {
     page: 1,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(_, prevState) {
+    const { query, page } = this.state;
     if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
+      this.cutQuery(prevState.query) !== this.cutQuery(query) ||
+      prevState.page !== page
     ) {
       try {
-        this.setState({ loading: true })
+        this.setState({ loading: true });
         const images = await fetchImages();
-        console.log(images);
-        this. setState({images, loading: false })
-      }
-      catch (error) {
-        console.log(error)
+        this.setState({ images });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.setState({ loading: false });
       }
     }
   }
 
-  onSubmit = newQuery => {
+  handleSubmit = newQuery => {
     this.setState({
       query: `${Date.now()}/${newQuery}`,
       images: [],
       page: 1,
     });
   };
+
+  handleLoadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
+  cutQuery = query => query.slice(query.indexOf('/') + 1, query.length);
+
   render() {
     return (
       <div
@@ -47,9 +57,9 @@ export class App extends Component {
           paddingBottom: '24px',
         }}
       >
-        <Searchbar onSubmit={this.onSubmit} />
-        <ImageGallery />
-        <Button />
+        <Searchbar onSubmit={this.handleSubmit} />
+        {this.state.images.length > 0 && <ImageGallery />}
+        {this.state.page!==1 && <Button onClick={this.handleLoadMore} />}
         <GlobalStyle />
       </div>
     );
