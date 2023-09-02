@@ -4,29 +4,39 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from 'components/Button/Button';
 import { GlobalStyle } from './GlobalStyle';
 import { fetchImages } from 'api';
+import { Loader } from './Loader/Loader';
 
 export class App extends Component {
   state = {
+    isLoading: false,
     query: '',
     images: [],
-    loading: false,
     page: 1,
+    perPage: 12,
+    totalPages: 1,
   };
 
   async componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-    if (
-      this.cutQuery(prevState.query) !== this.cutQuery(query) ||
-      prevState.page !== page
-    ) {
+    const { query, page, perPage } = this.state;
+    if (prevState.query !== query || prevState.page !== page) {
       try {
-        this.setState({ loading: true });
-        const images = await fetchImages();
-        this.setState({ images });
+        this.setState({ isLoading: true });
+        const response = await fetchImages(this.cutQuery(query), page, perPage);
+
+        const newImages = response.hits;
+        if (newImages.length === 0) {
+          throw new Error();
+        }
+        this.setState(prevState => ({
+          images: [...prevState.images, ...newImages],
+        }));
+
+        const totalPages = Math.ceil(response.totalHits / perPage);
+        this.setState({ totalPages });
       } catch (error) {
         console.log(error);
       } finally {
-        this.setState({ loading: false });
+        this.setState({ isLoading: false });
       }
     }
   }
@@ -48,6 +58,9 @@ export class App extends Component {
   cutQuery = query => query.slice(query.indexOf('/') + 1, query.length);
 
   render() {
+    const { isLoading, images, page, totalPages } = this.state;
+    console.log('isLoading', this.state.isLoading);
+
     return (
       <div
         style={{
@@ -58,8 +71,17 @@ export class App extends Component {
         }}
       >
         <Searchbar onSubmit={this.handleSubmit} />
-        {this.state.images.length > 0 && <ImageGallery />}
-        {this.state.page!==1 && <Button onClick={this.handleLoadMore} />}
+
+        {images.length > 0 && (
+          <ImageGallery images={images} />
+        )}
+
+        {isLoading ? (
+          <Loader />
+        ) : (
+          totalPages > 1 &&
+          page !== totalPages && <Button onClick={this.handleLoadMore} />
+        )}
         <GlobalStyle />
       </div>
     );
