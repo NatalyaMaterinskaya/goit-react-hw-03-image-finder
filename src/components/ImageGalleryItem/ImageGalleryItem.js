@@ -1,11 +1,51 @@
-import { Modal } from 'components/Modal/Modal';
 import { ImageGalleryItemWrapper, Image } from './ImageGalleryItem.styled';
+import { Component } from 'react';
+import ReactModal from 'react-modal';
 
-export const ImageGalleryItem = () => {
-  return (
-    <ImageGalleryItemWrapper>
-      <Image src="" alt="" />
-      <Modal/>
-    </ImageGalleryItemWrapper>
-  );
+
+const customStyles = {
+  overlay: {
+    zIndex: '200',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  },
+  content: {
+    maxWidth: '1000px',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    padding: 'none',
+  },
 };
+
+ReactModal.setAppElement('#root');
+
+export class ImageGalleryItem extends Component {
+  state = {
+    isModalOpen: false,
+  };
+
+  handleOpenModal = () => this.setState({ isModalOpen: true });
+  handleCloseModal = () => this.setState({ isModalOpen: false });
+
+  render() {
+    const {
+      image: { webformatURL, largeImageURL, tags }
+    } = this.props;
+
+    return (
+      <ImageGalleryItemWrapper>
+        <Image src={webformatURL} alt={tags} onClick={this.handleOpenModal} />
+        <ReactModal
+          isOpen={this.state.isModalOpen}
+          onRequestClose={this.handleCloseModal}
+          style={customStyles}
+        >
+          <img src={largeImageURL} alt={tags} />
+        </ReactModal>
+      </ImageGalleryItemWrapper> 
+    );
+  }
+}
