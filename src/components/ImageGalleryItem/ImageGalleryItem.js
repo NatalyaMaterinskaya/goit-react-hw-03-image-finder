@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types';
+
 import { ImageGalleryItemWrapper, Image } from './ImageGalleryItem.styled';
 import { Component } from 'react';
 import ReactModal from 'react-modal';
-
 
 const customStyles = {
   overlay: {
@@ -32,7 +33,7 @@ export class ImageGalleryItem extends Component {
 
   render() {
     const {
-      image: { webformatURL, largeImageURL, tags }
+      image: { webformatURL, largeImageURL, tags },
     } = this.props;
 
     return (
@@ -45,7 +46,16 @@ export class ImageGalleryItem extends Component {
         >
           <img src={largeImageURL} alt={tags} />
         </ReactModal>
-      </ImageGalleryItemWrapper> 
+      </ImageGalleryItemWrapper>
     );
   }
 }
+
+ImageGalleryItem.propTypes = {
+  image: PropTypes.shape({
+    id: PropTypes.number,
+    webformatURL: PropTypes.string,
+    largeImageURL: PropTypes.string,
+    tags: PropTypes.string,
+  }).isRequired,
+};

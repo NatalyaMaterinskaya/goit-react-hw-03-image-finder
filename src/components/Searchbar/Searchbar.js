@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
+
 import {
   SearchbarWrapper,
   SearchForm,
   Button,
-  ButtonLabel,
   Input,
 } from './Searchbar.styled';
 import { HiOutlineMagnifyingGlass } from 'react-icons/hi2';
@@ -23,7 +24,7 @@ export const Searchbar = ({ onSubmit }) => {
 
         <Input
           type="text"
-          name='query'
+          name="query"
           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
@@ -31,4 +32,8 @@ export const Searchbar = ({ onSubmit }) => {
       </SearchForm>
     </SearchbarWrapper>
   );
+};
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
